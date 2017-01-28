@@ -5,8 +5,8 @@ exports.up = function(knex, Promise) {
       table.string('email').notNullable().unique();
       table.string('first_name').notNullable();
       table.string('last_name').notNullable();
-      table.integer('bdgs_low_range').notNullable().defaultTo(80);
-      table.integer('bdgs_high_range').notNullable().defaultTo(180);
+      table.integer('bdgs_low_range').notNullable().defaultTo('80');
+      table.integer('bdgs_high_range').notNullable().defaultTo('180');
       table.string('last_name').notNullable();
       table.specificType('hashed_password', 'char(60)')
       table.text('photo', 'medium').defaultTo('')
