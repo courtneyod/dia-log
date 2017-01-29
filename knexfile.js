@@ -3,7 +3,7 @@
 module.exports = {
   development: {
     client: 'postgresql',
-    connection: 'postgres://localhost/dialog',
+    connection: 'postgres://localhost/dialog_dev',
     pool: {
       min: 1,
       max: 1

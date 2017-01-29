@@ -1,11 +1,10 @@
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('customers').del()
-    .then(function () {
-      return Promise.all([
+  return Promise.join(
+    knex('customers').del(),
         // Inserts seed entries
-        knex('customers').insert({
+        knex('customers').insert([{
             id: 1,
             email: 'courtney.od@gmail.com',
             first_name: 'courtney',
@@ -40,7 +39,6 @@ exports.seed = function(knex, Promise) {
             hashed_password: '$2a$12$C9AYYmcLVGYlGoO4vSZTPud9ArJwbGRsJ6TUsNULzR48z8fOnTXbz',  // youreawizard
             created_at: new Date('2016-06-29 15:29:16 UTC'),
             updated_at: new Date('2016-06-29 15:40:16 UTC')
-        })
-      ]);
-    });
+        }])
+    );
 };

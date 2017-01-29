@@ -1,11 +1,10 @@
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('health_stats').del()
-    .then(function () {
-      return Promise.all([
-        // Inserts seed entries
-        knex('health_stats').insert({
+  return Promise.join(
+    knex('health_stats').del(),
+
+        knex('health_stats').insert([{
             id: 1,
             pre_meal_bdgs: '110',
             post_meal_bdgs: '180',
@@ -52,7 +51,6 @@ exports.seed = function(knex, Promise) {
             post_meal_bdgs_time_stamp: new Date('2017-02-06 19:26:16 UTC'),
             created_at: new Date('2017-02-06 14:26:16 UTC'),
             updated_at: new Date('2017-02-06 19:26:16 UTC')
-        })
-      ]);
-    });
+        }])
+    );
 };

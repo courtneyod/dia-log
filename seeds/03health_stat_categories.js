@@ -1,71 +1,87 @@
 
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
-  return knex('categories').del()
-    .then(function () {
-      return Promise.all([
-        // Inserts seed entries
-        knex('categories').insert({
+  return Promise.join(
+    knex('health_stat_categories').del(),
+
+        knex('health_stat_categories').insert([{
             id: 1,
-            category: 'tacos',
+            categories_id: '1',
+            health_stat_id: '1',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 2,
-            category: 'pastrie',
+            categories_id: '11',
+            health_stat_id: '4',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 3,
-            category: 'burger',
+            categories_id: '3',
+            health_stat_id: '3',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 4,
-            category: 'buritto',
+            categories_id: '2',
+            health_stat_id: '2',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 5,
-            category: 'tamales',
+            categories_id: '5',
+            health_stat_id: '1',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 6,
-            category: 'sandwhich',
+            categories_id: '6',
+            health_stat_id: '4',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 7,
-            category: 'salad',
+            categories_id: '7',
+            health_stat_id: '3',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 8,
-            category: 'fruit',
+            categories_id: '8',
+            health_stat_id: '3',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 9,
-            category: 'soup',
+            categories_id: '10',
+            health_stat_id: '1',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 10,
-            category: 'chips',
+            categories_id: '7',
+            health_stat_id: '2',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 11,
-            category: 'eggs',
+            categories_id: '10',
+            health_stat_id: '2',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
         },{
             id: 12,
-            category: 'fries',
+            categories_id: '9',
+            health_stat_id: '1',
             created_at: new Date('2017-01-29 14:26:16 UTC'),
   	        updated_at: new Date('2017-01-30 14:26:16 UTC')
-        })
-      ]);
-    });
+        },{
+            id: 13,
+            categories_id: '1',
+            health_stat_id: '1',
+            created_at: new Date('2017-01-29 14:26:16 UTC'),
+  	        updated_at: new Date('2017-01-30 14:26:16 UTC')
+        }])
+    );
 };
