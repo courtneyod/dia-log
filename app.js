@@ -18,13 +18,14 @@ var photos = require('./routes/photos');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
 var categories = require('./routes/categories');
+var health_stat_categories = require('./routes/health_stat_categories');
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// 
+//
 // const myGoogleConfigs = {
 //     clientID: process.env.GOOGLE_CLIENT_ID,
 //     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -45,6 +46,7 @@ app.use('/photos', photos)
 app.use('/login', login)
 app.use('/signup', signup)
 app.use('/categories', categories)
+app.use('/health-stat-categories', health_stat_categories)
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
