@@ -9,17 +9,20 @@ var knex = require("../knex")
 router.get('/', function(req, res, next){
 	// var email = req.cookies['/user']
 	const email = req.query.email
-	console.log(email, 'request phtos email')
+	console.log(email, 'request photos email')
 
 	knex('customers').where('email', email).first()
 		.then(function(data){
 
 			const id = data.id
+			console.log('the users id is ' + id)
 
 			knex('health_stats').where('customer_id', id)
 				.then((data)=>{
-
-					res.json({data})
+					console.log(data, 'this is the photo data')
+					res.json({
+						'photo': data
+					})
 
 				}).catch(function(err){
 
@@ -30,13 +33,13 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-	console.log(req.body)
-	const {photo, pre_meal_bdgs, insulin_units, customer_id} = req.body;
+	console.log(req.body, 'this is the req.body')
+	const {photo_url, pre_meal_bdgs, insulin_units, customer_id} = req.body;
 	const currentTime = knex.fn.now();
 
-	knex('health_stats').insert({'photo':photo, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime})
+	knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime}).returning('*')
 		.then((results)=>{
-			console.log(results)
+			console.log(results, 'inserted objs')
 			res.json({results});
 		}).catch((err)=>{
 			res.send(err);
