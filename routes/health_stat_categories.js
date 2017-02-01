@@ -49,12 +49,34 @@ router.get('/:id', function(req, res, next){
 
 	knex('health_stat_categories').where('health_stat_id', id)
 		.then(function(data){
-
+			console.log(data, 'this is the jealth stat join table')
 			res.json({data});
 
 		}).catch((err)=>{
 			res.status(500)
 		})
+})
+router.get('/name/:id', function(req, res, next){
+	const id = req.params.id;
+//
+// SELECT
+//  categories.category
+// FROM
+//  health_stat_categories
+// INNER JOIN health_stats ON health_stat_categories.health_stat_id = health_stats.id
+// INNER JOIN categories ON health_stat_categories.categories_id = categories.id
+// where health_stats_id = 5;
+
+knex.select('category').from('health_stat_categories')
+.innerJoin('health_stats', 'health_stat_categories.health_stat_id', 'health_stats.id')
+.innerJoin('categories', 'health_stat_categories.categories_id', 'categories.id')
+.where('health_stat_id', id)
+	.then((data)=>{
+		console.log('data from join', data)
+		res.json({data})
+	}).catch((err)=> {
+		console.log(err)
+	})
 })
 
 module.exports = router
