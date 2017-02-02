@@ -84,10 +84,19 @@ router.post('/', function(req, res, next){
 	var categoryId = ''
 	var photoId = ''
 
-	knex('categories').insert({'category': category}).returning('*')
+	knex('categories').where({'category': category}).first()
 		.then((results)=>{
-			console.log(results, 'results from inserting!!!!!!! in cats')
-			categoryId = results[0].id
+
+			if(!results){
+				knex('categories').insert({'category': category}).returning('*')
+					.then((results)=>{
+						console.log(results, 'results from inserting!!!!!!! in cats')
+						categoryId = results[0].id
+					})
+			} else {
+				categoryId = results.id
+			}
+			
 		}).then(() =>{
 			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime}).returning('*')
 				.then((results)=>{
