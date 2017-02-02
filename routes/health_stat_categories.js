@@ -21,18 +21,6 @@ router.post('/', function(req, res, next){
 	const health_stat_id = req.query.health_stat_id;
 	const categories_id = req.query.categories_id;
 
-	// knex('categories').where('categories_id', category_id)
-	// 	.then(function(data){
-	// 		var categories_id = '';
-	// 		if(!data){
-	// 			knex('categories').insert({'category': category_name})
-	// 				.then(function(dataInput){
-	// 					categories_id = dataInput.id;
-	// 				});
-	// 		} else {
-	// 			categories_id = data.id;
-	// 		}
-
 			knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id})
 				.then((data)=>{
 					res.json({data});
@@ -49,7 +37,6 @@ router.get('/:id', function(req, res, next){
 
 	knex('health_stat_categories').where('health_stat_id', id)
 		.then(function(data){
-			console.log(data, 'this is the jealth stat join table')
 			res.json({data});
 
 		}).catch((err)=>{
@@ -72,7 +59,7 @@ knex.select('category').from('health_stat_categories')
 .innerJoin('categories', 'health_stat_categories.categories_id', 'categories.id')
 .where('health_stat_id', id)
 	.then((data)=>{
-		console.log('data from join', data)
+		// console.log('data from join', data)
 		res.json({data})
 	}).catch((err)=> {
 		console.log(err)

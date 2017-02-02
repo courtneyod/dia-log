@@ -17,7 +17,7 @@ router.get('/', function(req, res, next){
 			const id = data.id
 			// console.log('the users id is ' + id)
 
-			knex('health_stats').where('customer_id', id)
+			knex('health_stats').where('customer_id', id).orderBy('pre_meal_bdgs_time_stamp', 'desc')
 				.then((results)=>{
 					// console.log(results, 'iusidfuisdufisdufisd')
 					var photoObj = results.map((data)=>{
@@ -61,10 +61,10 @@ router.get('/', function(req, res, next){
 								console.log(err)
 							})
 					})
-					console.log(getCats, 'what is getcats')
+					// console.log(getCats, 'what is getcats')
 					Promise.all(getCats)
 						.then(data=>{
-							console.log(data, 'list of objs?sss')
+							// console.log(data, 'list of objs?sss')
 							res.json({data})
 						})
 
@@ -77,17 +77,35 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-	console.log(req.body, 'this is the req.body')
+	// console.log(req.body, 'this is the req.body')
 	const {photo_url, pre_meal_bdgs, insulin_units, customer_id} = req.body;
 	const currentTime = knex.fn.now();
+	const category = req.body.category
+	var categoryId = ''
+	var photoId = ''
 
-	knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime}).returning('*')
+	knex('categories').insert({'category': category}).returning('*')
 		.then((results)=>{
-			console.log(results, 'inserted objs')
-			res.json({results});
-		}).catch((err)=>{
-			res.send(err);
-		});
+			console.log(results, 'results from inserting!!!!!!! in cats')
+			categoryId = results[0].id
+		}).then(() =>{
+			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime}).returning('*')
+				.then((results)=>{
+					photoId = results[0].id
+					// console.log(results, 'inserted objs')
+					res.json({results});
+				}).then(data =>{
+					knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
+						.then((results)=>{
+							// console.log(results, 'results from jioning that cat adn phot')
+						}).catch((err)=>{
+							console.log(err, 'error from trying to joing cats id and photo id')
+						})
+				})
+
+		})
+
+
 });
 
 router.patch('/:id/edit', function(req, res, next){

@@ -23,11 +23,11 @@ router.post('/', (req, res, next)=>{
 			if(data){
 				var sqlPassword = data.hashed_password
 				var userId = data.id
-				console.log(data)
+				// console.log(data)
 				bcrypt.compare(password, sqlPassword)
 				.then((results)=>{
-					console.log(data, 'worked?')
-					console.log(res, 'this is the res')
+					// console.log(data, 'worked?')
+					// console.log(res, 'this is the res')
 					var obj = {
 						"data": data,
 						"validPassword": true
