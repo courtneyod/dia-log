@@ -5,6 +5,8 @@ exports.up = function(knex, Promise) {
       table.integer('pre_meal_bdgs')
       table.integer('post_meal_bdgs')
       table.integer('insulin_units')
+      table.string('aws_name').defaultTo('');
+      table.string('aws_type').defaultTo('');
       table.integer('customer_id').notNullable().references('id').inTable('customers').onDelete('cascade')
       table.text('photo_url', 'medium').defaultTo('')
       table.timestamp('pre_meal_bdgs_time_stamp').notNullable().defaultTo(knex.fn.now());

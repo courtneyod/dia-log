@@ -78,7 +78,7 @@ router.get('/', function(req, res, next){
 
 router.post('/', function(req, res, next){
 	// console.log(req.body, 'this is the req.body')
-	const {photo_url, pre_meal_bdgs, insulin_units, customer_id} = req.body;
+	const {photo_url, pre_meal_bdgs, insulin_units, customer_id, aws_type, aws_location} = req.body;
 	const currentTime = knex.fn.now();
 	const category = req.body.category
 	var categoryId = ''
@@ -96,9 +96,9 @@ router.post('/', function(req, res, next){
 			} else {
 				categoryId = results.id
 			}
-			
+
 		}).then(() =>{
-			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime}).returning('*')
+			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_location":aws_location}).returning('*')
 				.then((results)=>{
 					photoId = results[0].id
 					// console.log(results, 'inserted objs')

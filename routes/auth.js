@@ -23,7 +23,7 @@ AWS.config.update({region:'us-east-1'});
 //   }});
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html#Credentials_from_Disk
-console.log(AWS.config, 'config')
+// console.log(AWS.config, 'config')
 
 var upload = multer({
     storage: multerS3({
@@ -31,7 +31,7 @@ var upload = multer({
         s3: s3,
         bucket: 'dialog-courtney',
         key: function (req, file, cb) {
-            console.log(file);
+            // console.log(file, 'file in multer');
             cb(null, file.originalname); //use Date.now() for unique file keys
         }
     })
@@ -55,14 +55,13 @@ function uploadToS3(file, destFileName, callback) {
 }
 
 router.post('/', upload.single('file'), function (req, res) {
-    console.log(req.body, 'request')
     console.log(req.file, 'files')
+    console.log(req.file.location, 'file location for aws')
 
-    if (!req.files || !req.files.file1) {
+    if (!req.file) {
         return res.status(403).send('expect 1 file upload named file1').end();
     }
-    var file1 = req.files.file1;
-
+    var file1 = req.file;
     // this is mainly for user friendliness. this field can be freely tampered by attacker.
     if (!/^image\/(jpe?g|png|gif)$/i.test(file1.mimetype)) {
         return res.status(403).send('expect image file').end();
@@ -70,48 +69,84 @@ router.post('/', upload.single('file'), function (req, res) {
 
     var pid = '10000' + parseInt(Math.random() * 10000000);
 
-    uploadToS3(file1, pid, function (err, data) {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('failed to upload to s3').end();
-        }
-        res.status(200)
-            .send('File uploaded to S3: '
-                    + data.Location.replace(/</g, '&lt;')
-                    + '<br/><img src="' + data.Location.replace(/"/g, '&quot;') + '"/>')
-            .end();
-    })
+    // var jsonObj = 'File uploaded to S3: '
+    //         + file1.location.replace(/</g, '&lt;')
+    //         + '<br/><img src="' + file1.location.replace(/"/g, '&quot;') + '"/>'
+
+    var jsonObj = file1
+
+    res.json({jsonObj})
+
+  //   { fieldname: 'file',
+  // originalname: 'GOPR0441.JPG',
+  // encoding: '7bit',
+  // mimetype: 'image/jpeg',
+  // size: 4836562,
+  // bucket: 'dialog-courtney',
+  // key: 'GOPR0441.JPG',
+  // acl: 'private',
+  // contentType: 'application/octet-stream',
+  // contentDisposition: null,
+  // storageClass: 'STANDARD',
+  // metadata: null,
+  // location: 'https://dialog-courtney.s3.amazonaws.com/GOPR0441.JPG',
+  // etag: '"3eac51ee5f6f155b86e6cec2a4b3ac65"' }
+
+    // uploadToS3(file1, pid, function (err, data) {
+    //     console.log('data', data)
+    //     if (err) {
+    //         console.error(err);
+    //         return res.status(500).send('failed to upload to s3').end();
+    //     }
+    //     res.status(200)
+    //         .send('File uploaded to S3: '
+    //                 + data.Location.replace(/</g, '&lt;')
+    //                 + '<br/><img src="' + data.Location.replace(/"/g, '&quot;') + '"/>')
+    //         .end();
+    // })
 })
 
-
-
-
-
-
-
-
-
-
-
-// AWS.config.update({
-//         accessKeyId: accessKeyId,
-//         secretAccessKey: secretAccessKey,
-//         region: 'us-east-1'
-//     });
-
-// var s3 = new AWS.S3();
+// router.get('/',function(req,res){
+//     console.log(req.body, 'body from get request for aws')
+//     var url = req.body
 //
-// s3.config.update({
-//     accessKeyId: accessKeyId,
-//     secretAccessKey: secretAccessKey
+//     var imgStream = s3.getObject({
+//       Bucket: 'dialog-courtney',
+//       Key: url
+//     }).createReadStream();
+//     // http://s3-us-west-2.amazonaws.com/my-bucket/myobject.jpg
+//     imgStream.pipe(res);
 // });
-//
+
+router.get('/', (req, res) => {
+  // const s3 = new aws.S3();
+  const fileName = req.query['file-name'];
+  const fileType = req.query['file-type'];
+  const s3Params = {
+    Bucket: 'dialog-courtney',
+    Key: fileName,
+    Expires: 60,
+    Region:'us-east-1',
+    ContentType: fileType,
+    ACL: 'public-read'
+  };
+
+  s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    if(err){
+      console.log(err);
+      return res.end();
+    }
+    console.log(data, 'data returned')
+    const returnData = {
+      signedRequest: data,
+      url: `https://dialog-courtney.s3-us-east-1.amazonaws.com/${fileName}`
+    };
+    console.log('returned data before json ,', returnData)
+    res.write(JSON.stringify(returnData));
+    res.end();
+  });
+});
 
 
-// //use by upload form
-// router.post('/', upload.array('upl'), function (req, res, next) {
-//     console.log(req, "this is the post")
-//     console.log('uploaded')
-// });
 
 module.exports = router
