@@ -66,4 +66,30 @@ knex.select('category').from('health_stat_categories')
 	})
 })
 
+router.delete('/', function(req, res, next){
+	console.log('here')
+	console.log(req.body, 'body')
+	var category = req.body.category
+	var photoId = req.body.id
+
+	knex('categories').where('category', category)
+		.then(function(data){
+
+			console.log(data, 'cat I want to delete')
+			var categories_id = data[0].id
+			console.log(categories_id, 'id of cat', photoId, 'id of phot i want to delete')
+
+// delete from health_stat_categories where health_stat_id = 1 and categories_id =1;
+			knex('health_stat_categories').where({
+				'health_stat_id':photoId,
+				'categories_id':categories_id
+			}).del().then((results)=>{
+					console.log(results, 'results from delete')
+				})
+
+		}).catch((err)=>{
+			res.status(500)
+		})
+})
+
 module.exports = router
