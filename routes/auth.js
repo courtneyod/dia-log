@@ -5,20 +5,32 @@ const router = Express.Router()
 var knex = require('../knex');
 
 var passport = require('passport');
+var fs = require('fs');
+var AWS = require('aws-sdk');
+var accessKeyId =  process.env.AWS_ACCESS_KEY;
+var secretAccessKey = process.env.AWS_SECRET_KEY;
 
-// =====================================
-// GOOGLE ROUTES =======================
-// =====================================
-// send to google to do the authentication
-// profile gets us their basic information including their name
-// email gets their emails
-// router.get('/google', passport.authenticate(GoogleStrategy, { scope : ['profile', 'email'] }));
+AWS.config.update({
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey
+    });
 
-// the callback after google has authenticated the user
-router.get('/auth/google/callback',
-    passport.authenticate('google', {
-            successRedirect : '/profile',
-            failureRedirect : '/'
-    }));
+var s3 = new AWS.S3();
+
+var upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'dialog-courtney',
+        key: function (req, file, cb) {
+            console.log(file);
+            cb(null, file.originalname); //use Date.now() for unique file keys
+        }
+    })
+});
+
+router.post('/', function(req, res, next){
+
+})
+
 
 module.exports = router

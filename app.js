@@ -12,7 +12,8 @@ var cors = require('cors')
 
 app.use(cors())
 
-var auth = require('./routes/auth');
+var aws = require('./routes/auth');
+// var aws = require('./routes/aws');
 var settings = require('./routes/settings');
 var photos = require('./routes/photos');
 var login = require('./routes/login');
@@ -40,7 +41,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // ));
 
 
-app.use('/auth', auth)
+app.use('/aws', aws)
+// app.use('/s3', aws)
 app.use('/settings', settings)
 app.use('/photos', photos)
 app.use('/login', login)

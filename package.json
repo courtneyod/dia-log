@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/courtneyod/dia-log#readme",
   "dependencies": {
+    "aws-sdk": "^2.9.0",
     "bcrypt-as-promised": "^1.1.0",
     "body-parser": "~1.15.2",
     "boom": "^4.2.0",
@@ -28,6 +29,7 @@
     "cors": "^2.8.1",
     "express": "^4.14.0",
     "express-session": "^1.15.0",
+    "fs": "0.0.1-security",
     "http": "0.0.0",
     "knex": "^0.12.6",
     "mocha": "^3.2.0",
