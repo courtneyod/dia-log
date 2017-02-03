@@ -8,6 +8,7 @@ const db  = require('./knex');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+var morgan = require('morgan'); // For logging
 var cors = require('cors')
 
 app.use(cors())
@@ -26,6 +27,7 @@ app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(morgan('combined'))
 //
 // const myGoogleConfigs = {
 //     clientID: process.env.GOOGLE_CLIENT_ID,
