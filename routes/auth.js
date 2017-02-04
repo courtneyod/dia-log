@@ -16,7 +16,7 @@ var AWS = require('aws-sdk');
 AWS.config.loadFromPath(__dirname+'/../aws-config.json');
 var s3 = new AWS.S3();
 
-AWS.config.update({region:'us-east-1'});
+AWS.config.update({region:'us-west-2'});
 // AWS.config.update({"credentials": {
 //     "accessKeyId": process.env.AWS_ACCESS_KEY,
 //       "secretAccessKey": process.env.AWS_SECRET_KE ,
@@ -46,7 +46,7 @@ function uploadToS3(file, destFileName, callback) {
             ACL: 'public-read',
             Body: fs.createReadStream(file.path),
             Key: destFileName.toString(),
-            ContentType: 'application/octet-stream' // force download if it's accessed as a top location
+            ContentType: 'image/jpeg'
         })
         // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#httpUploadProgress-event
         // .on('httpUploadProgress', function(evt) { console.log(evt); })
@@ -125,8 +125,7 @@ router.get('/', (req, res) => {
   const s3Params = {
     Bucket: 'dialog-courtney',
     Key: fileName,
-    Expires: 60,
-    Region:'us-east-1',
+    Expires: 60000,
     ContentType: fileType,
     ACL: 'public-read'
   };
@@ -139,11 +138,11 @@ router.get('/', (req, res) => {
     console.log(data, 'data returned')
     const returnData = {
       signedRequest: data,
-      url: `https://dialog-courtney.s3-us-east-1.amazonaws.com/${fileName}`
+      url: `https://dialog-courtney.s3.amazonaws.com/${fileName}`
     };
     console.log('returned data before json ,', returnData)
-    res.write(JSON.stringify(returnData));
-    res.end();
+    res.json(JSON.stringify(returnData));
+    // res.end();
   });
 });
 

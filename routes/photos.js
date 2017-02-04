@@ -26,6 +26,8 @@ router.get('/', function(req, res, next){
 						obj.pre_meal_bdgs= data.pre_meal_bdgs;
 						obj.post_meal_bdgs= obj.post_meal_bdgs;
 						obj.insulin_units= data.insulin_units
+						obj.aws_name= data.aws_name
+						obj.aws_type= data.aws_type
 						obj.customer_id= data.customer_id
 						obj.photo_url= data.photo_url
 						obj.pre_meal_bdgs_time_stamp = data.pre_meal_bdgs_time_stamp
@@ -77,12 +79,12 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-	// console.log(req.body, 'this is the req.body')
-	const {photo_url, pre_meal_bdgs, insulin_units, customer_id, aws_type, aws_location} = req.body;
+	console.log(req.body, 'this is the req.body')
+	const {photo_url, pre_meal_bdgs, insulin_units, customer_id, aws_type, aws_name, category} = req.body;
 	const currentTime = knex.fn.now();
-	const category = req.body.category
 	var categoryId = ''
 	var photoId = ''
+	// console.log(req.body, 'what im adding')
 
 	knex('categories').where({'category': category}).first()
 		.then((results)=>{
@@ -98,9 +100,9 @@ router.post('/', function(req, res, next){
 			}
 
 		}).then(() =>{
-			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_location":aws_location}).returning('*')
+			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
 				.then((results)=>{
-					photoId = results[0].id
+					photoId = results[0]
 					// console.log(results, 'inserted objs')
 					res.json({results});
 				}).then(data =>{
