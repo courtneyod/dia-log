@@ -102,13 +102,13 @@ router.post('/', function(req, res, next){
 		}).then(() =>{
 			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
 				.then((results)=>{
-					photoId = results[0]
-					// console.log(results, 'inserted objs')
+					photoId = results[0].id
+					console.log(results, 'inserted objs', photoId, 'photoId', categoryId, 'categoryId')
 					res.json({results});
 				}).then(data =>{
 					knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
 						.then((results)=>{
-							// console.log(results, 'results from jioning that cat adn phot')
+							console.log(results, 'results from jioning that cat adn phot')
 						}).catch((err)=>{
 							console.log(err, 'error from trying to joing cats id and photo id')
 						})

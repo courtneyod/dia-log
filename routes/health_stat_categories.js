@@ -31,6 +31,41 @@ router.post('/', function(req, res, next){
 
 });
 
+router.post('/addcat', function(req, res, next){
+	const health_stat_id = req.body.health_stat_id;
+	const category = req.body.category;
+	var categories_id = ''
+
+	knex('categories').where('category', category).first()
+		.then((results)=>{
+			console.log(results, 'results from checking if a category exsists')
+
+			if(!results){
+				knex('categories').insert({'category': category})
+					.then((data)={
+						// console.log(data, 'data from inserting categories')
+						// categories_id = data.id
+					}).catch((err)=>{
+						res.status(500);
+						res.send(err);
+					});
+
+			} else {
+				categories_id = results.id
+			}
+
+			knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id})
+				.then((data)=>{
+					console.log(data, 'results from joining')
+					res.json({data});
+				}).catch((err)=>{
+					res.status(500);
+					res.send(err);
+				});
+		})
+
+});
+
 
 router.get('/:id', function(req, res, next){
 	const id = req.params.id;
