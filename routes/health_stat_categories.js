@@ -33,38 +33,43 @@ router.post('/', function(req, res, next){
 
 router.post('/addcat', function(req, res, next){
 	const health_stat_id = req.body.id;
-	console.log(health_stat_id, 'id exist?', req.body)
 	const category = req.body.category;
 	var categories_id = ''
 
 	knex('categories').where('category', category).first()
 		.then((results)=>{
-			console.log(results, 'results from checking if a category exsists')
+			console.log(results, 'does that cat exist?')
 
 			if(!results){
-				console.log('no cat exist')
 				knex('categories').insert({'category': category}).returning('*')
 					.then((data)=>{
-						console.log(data, 'data from adding')
-						categories_id = data.id
+						console.log(data, 'added a new cat that was not in database')
+						categories_id = data[0].id
+
+						knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id}).returning('*')
+							.then((data)=>{
+								console.log(data, 'results from joining a brand new cat with a photo')
+								res.json({data});
+							}).catch((err)=>{
+								res.status(500);
+								res.send(err);
+							});
+					}).catch((err)=>{
+						res.status(500);
+						res.send(err);
+					})
+
+			} else {
+				categories_id = results.id
+				knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id}).returning('*')
+					.then((data)=>{
+						console.log(data, 'results from joining a cat in the database with a photo')
+						res.json({data});
 					}).catch((err)=>{
 						res.status(500);
 						res.send(err);
 					});
-
-			} else {
-				console.log('cat exist')
-				categories_id = results.id
 			}
-			console.log(health_stat_id, categories_id, 'idss')
-			knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id})
-				.then((data)=>{
-					console.log(data, 'results from joining')
-					res.json({data});
-				}).catch((err)=>{
-					res.status(500);
-					res.send(err);
-				});
 		})
 
 });
@@ -105,17 +110,13 @@ knex.select('category').from('health_stat_categories')
 })
 
 router.delete('/', function(req, res, next){
-	console.log('here')
-	console.log(req.body, 'body')
 	var category = req.body.category
 	var photoId = req.body.id
 
 	knex('categories').where('category', category)
 		.then(function(data){
 
-			console.log(data, 'cat I want to delete')
 			var categories_id = data[0].id
-			console.log(categories_id, 'id of cat', photoId, 'id of phot i want to delete')
 
 // delete from health_stat_categories where health_stat_id = 1 and categories_id =1;
 			knex('health_stat_categories').where({
