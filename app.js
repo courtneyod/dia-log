@@ -8,13 +8,12 @@ const db  = require('./knex');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-var morgan = require('morgan'); // For logging
-var cors = require('cors')
+const morgan = require('morgan'); // For logging
+const cors = require('cors')
 
 app.use(cors())
 
 var aws = require('./routes/auth');
-// var aws = require('./routes/aws');
 var settings = require('./routes/settings');
 var photos = require('./routes/photos');
 var login = require('./routes/login');
@@ -44,7 +43,6 @@ app.use(morgan('combined'))
 
 
 app.use('/aws', aws)
-// app.use('/s3', aws)
 app.use('/settings', settings)
 app.use('/photos', photos)
 app.use('/login', login)

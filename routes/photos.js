@@ -19,12 +19,11 @@ router.get('/', function(req, res, next){
 
 			knex('health_stats').where('customer_id', id).orderBy('pre_meal_bdgs_time_stamp', 'desc')
 				.then((results)=>{
-					// console.log(results, 'iusidfuisdufisdufisd')
 					var photoObj = results.map((data)=>{
 						var obj = {}
 						obj.id = data.id
 						obj.pre_meal_bdgs= data.pre_meal_bdgs;
-						obj.post_meal_bdgs= obj.post_meal_bdgs;
+						obj.post_meal_bdgs= data.post_meal_bdgs;
 						obj.insulin_units= data.insulin_units
 						obj.aws_name= data.aws_name
 						obj.aws_type= data.aws_type
@@ -36,29 +35,23 @@ router.get('/', function(req, res, next){
 						obj.updated_at = data.updated_at
 						return obj
 					})
+					console.log(photoObj, 'objs aftr map')
 					// var photoId = data.id
-					// console.log(photoObj, 'this is the photo datakshdjkfsdkfskdhfsdhfjsdjfhjshsdfhjjdffdjddjdfjdfjhs')
 					var getCats = photoObj.map((data)=>{
 						var photoId = data.id
 
-						// console.log(obj, 'objs before join')
 						return knex.select('category').from('health_stat_categories')
 						.innerJoin('health_stats', 'health_stat_categories.health_stat_id', 'health_stats.id')
 						.innerJoin('categories', 'health_stat_categories.categories_id', 'categories.id')
 						.where('health_stat_id', photoId)
 							.then((categoeries)=>{
-								// categoeries = [ anonymous { category: 'sandwhich' }, anonymous { category: 'eggs' } ]
 								var arr = categoeries.map((cats)=>{
 									return cats.category
 								})
 
 								data.category = arr
-								// console.log(data, 'at the end')
-								// res.writeHead({
-								// 	data
-								// })
+
 								return data
-								// console.log('data from join', obj)
 							}).catch((err)=> {
 								console.log(err)
 							})
@@ -66,7 +59,7 @@ router.get('/', function(req, res, next){
 					// console.log(getCats, 'what is getcats')
 					Promise.all(getCats)
 						.then(data=>{
-							// console.log(data, 'list of objs?sss')
+							console.log(data, 'list of objs?sss')
 							res.json({data})
 						})
 
@@ -84,7 +77,6 @@ router.post('/', function(req, res, next){
 	const currentTime = knex.fn.now();
 	var categoryId = ''
 	var photoId = ''
-	// console.log(req.body, 'what im adding')
 
 	knex('categories').where({'category': category}).first()
 		.then((results)=>{
@@ -116,6 +108,25 @@ router.post('/', function(req, res, next){
 
 		})
 
+
+});
+
+router.post('/addPostBdgs', function(req, res, next){
+	var postBdgs = req.body.postBdgs;
+	var photoId = req.body.id;
+	const currentTime = knex.fn.now();
+
+	knex('health_stats')
+	.where('id', photoId)
+	.update({'post_meal_bdgs': postBdgs, 'post_meal_bdgs_time_stamp': currentTime})
+	.returning('*')
+	.then((results)=>{
+		console.log(results, 'this photo has a new post meal ddgs')
+		res.json({results})
+	}).catch((err)=>{
+		console.log(err)
+		res.json({err})
+	})
 
 });
 

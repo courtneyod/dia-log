@@ -32,7 +32,8 @@ router.post('/', function(req, res, next){
 });
 
 router.post('/addcat', function(req, res, next){
-	const health_stat_id = req.body.health_stat_id;
+	const health_stat_id = req.body.id;
+	console.log(health_stat_id, 'id exist?', req.body)
 	const category = req.body.category;
 	var categories_id = ''
 
@@ -41,19 +42,21 @@ router.post('/addcat', function(req, res, next){
 			console.log(results, 'results from checking if a category exsists')
 
 			if(!results){
-				knex('categories').insert({'category': category})
-					.then((data)={
-						// console.log(data, 'data from inserting categories')
-						// categories_id = data.id
+				console.log('no cat exist')
+				knex('categories').insert({'category': category}).returning('*')
+					.then((data)=>{
+						console.log(data, 'data from adding')
+						categories_id = data.id
 					}).catch((err)=>{
 						res.status(500);
 						res.send(err);
 					});
 
 			} else {
+				console.log('cat exist')
 				categories_id = results.id
 			}
-
+			console.log(health_stat_id, categories_id, 'idss')
 			knex('health_stat_categories').insert({'health_stat_id': health_stat_id, 'categories_id': categories_id})
 				.then((data)=>{
 					console.log(data, 'results from joining')
