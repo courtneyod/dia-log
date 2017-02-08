@@ -29,9 +29,13 @@ router.post('/', (req, res, next)=>{
 
 				bcrypt.compare(password, sqlPassword)
 				.then((response)=>{
-                    // console.log('user from login', user)
                     var authentication = authenticateAndJWT(user);
-                    res.json(authentication);
+                    var obj = {
+                        'user': user,
+                        'authentication': authentication
+                    }
+                    // console.log('user from login', user)
+                    res.json(obj);
 				}, console.error)
 		}
 	})
