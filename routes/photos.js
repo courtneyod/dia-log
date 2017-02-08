@@ -3,14 +3,23 @@
 const Express = require('express')
 const router = Express.Router()
 var knex = require("../knex")
-
+const JWT = require("jsonwebtoken");
+const APP_SECRET = "SUPERSECRETAPPSECRET";
 
 //route works!
 router.get('/', function(req, res, next){
 	// var email = req.cookies['/user']
-	const email = req.query.email
+	const jwt = req.query.jwt;
 
-	knex('customers').where('email', email).first()
+	try {
+        var user = JWT.verify(req.query.jwt, APP_SECRET);
+    } catch(err) {
+        console.error(err);
+    }
+
+	if(user){
+	console.log('user on line 21 of photo.js', user)
+	knex('customers').where('id', user.id).first()
 		.then(function(data){
 
 			const id = data.id
@@ -66,6 +75,9 @@ router.get('/', function(req, res, next){
 
 				})
 		})
+	} else {
+		res.error("failed to authenticate user")
+	}
 })
 
 router.post('/', function(req, res, next){

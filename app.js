@@ -58,7 +58,7 @@ app.use(function(req, res, next) {
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('No route matches the page');
+  var err = new Error(req, 'No route matches the page');
   err.status = 404;
   next(err);
 });

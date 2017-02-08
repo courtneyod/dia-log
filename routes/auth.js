@@ -10,20 +10,14 @@ var morgan = require('morgan'); // For logging
 var uuid = require('uuid');
 var passport = require('passport');
 var fs = require('fs');
-// var upload = multer({destination: '/downloads'})
 
 var AWS = require('aws-sdk');
 AWS.config.loadFromPath(__dirname+'/../aws-config.json');
 var s3 = new AWS.S3();
-
 AWS.config.update({region:'us-west-2'});
-// AWS.config.update({"credentials": {
-//     "accessKeyId": process.env.AWS_ACCESS_KEY,
-//       "secretAccessKey": process.env.AWS_SECRET_KE ,
-//   }});
+
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html#Credentials_from_Disk
-// console.log(AWS.config, 'config')
 
 var upload = multer({
     storage: multerS3({
@@ -68,58 +62,11 @@ router.post('/', upload.single('file'), function (req, res) {
     }
 
     var pid = '10000' + parseInt(Math.random() * 10000000);
-
-    // var jsonObj = 'File uploaded to S3: '
-    //         + file1.location.replace(/</g, '&lt;')
-    //         + '<br/><img src="' + file1.location.replace(/"/g, '&quot;') + '"/>'
-
     var jsonObj = file1
-
     res.json({jsonObj})
-
-  //   { fieldname: 'file',
-  // originalname: 'GOPR0441.JPG',
-  // encoding: '7bit',
-  // mimetype: 'image/jpeg',
-  // size: 4836562,
-  // bucket: 'dialog-courtney',
-  // key: 'GOPR0441.JPG',
-  // acl: 'private',
-  // contentType: 'application/octet-stream',
-  // contentDisposition: null,
-  // storageClass: 'STANDARD',
-  // metadata: null,
-  // location: 'https://dialog-courtney.s3.amazonaws.com/GOPR0441.JPG',
-  // etag: '"3eac51ee5f6f155b86e6cec2a4b3ac65"' }
-
-    // uploadToS3(file1, pid, function (err, data) {
-    //     console.log('data', data)
-    //     if (err) {
-    //         console.error(err);
-    //         return res.status(500).send('failed to upload to s3').end();
-    //     }
-    //     res.status(200)
-    //         .send('File uploaded to S3: '
-    //                 + data.Location.replace(/</g, '&lt;')
-    //                 + '<br/><img src="' + data.Location.replace(/"/g, '&quot;') + '"/>')
-    //         .end();
-    // })
 })
 
-// router.get('/',function(req,res){
-//     console.log(req.body, 'body from get request for aws')
-//     var url = req.body
-//
-//     var imgStream = s3.getObject({
-//       Bucket: 'dialog-courtney',
-//       Key: url
-//     }).createReadStream();
-//     // http://s3-us-west-2.amazonaws.com/my-bucket/myobject.jpg
-//     imgStream.pipe(res);
-// });
-
 router.get('/', (req, res) => {
-  // const s3 = new aws.S3();
   const fileName = req.query['file-name'];
   const fileType = req.query['file-type'];
   const s3Params = {
@@ -142,7 +89,6 @@ router.get('/', (req, res) => {
     };
     console.log('returned data before json ,', returnData)
     res.json(JSON.stringify(returnData));
-    // res.end();
   });
 });
 
