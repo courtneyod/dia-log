@@ -6,42 +6,36 @@ const knex = require('../knex');
 const boom = require('boom');
 const bcrypt = require('bcrypt-as-promised');
 const cookieParser = require('cookie-parser')
+const {
+    generateToken,
+    authenticateAndJWT
+} = require("../helpers.js");
 
 
 router.post('/', (req, res, next)=>{
 	const {email, password, firstName} = req.query;
-	const lastName = 'temp'
-
-	console.log(email, password, firstName, 'this is the sign up query string')
+	const lastName = 'temp';
 
 	knex('customers').where('email', email).first()
 		.then((data)=>{
-			console.log(data, "howererowior")
 			if(data){
-				console.log('getting in heree', data)
+				console.log('user already in database', data)
+				res.json("user already exsists")
 				res.status(406);
-				res.json("this user is already in the database")
 			} else {
-				console.log(password, 'this should be the password when creating a new users')
-
 				bcrypt.hash(password, 12)
-				//    .then(console.log, console.error)
 					.then((hashedPassword)=>{
 
-						console.log(hashedPassword, 'hasheddd')
-
 						knex('customers').insert({'email': email, 'first_name':firstName, 'last_name': lastName, 'hashed_password': hashedPassword}).returning('*')
-							.then((data)=>{
+							.then((user)=>{
 
-								var opts = {
-									path: '/',
-									httpOnly: true
-								};
-								res.cookie('/login_token', firstName, opts);
-								res.cookie('/user', email, opts);
+								console.log(user, 'added!')
+								res.json(authenticateAndJWT({
+									   id: user[0].id,
+									   username: user[0].first_name,
+									   email: user[0].email
+								   }));
 
-								console.log(data, 'added!')
-								res.json(data)
 							})
 					}).catch((err)=>{
 						res.status(400);
