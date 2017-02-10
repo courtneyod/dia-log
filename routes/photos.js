@@ -81,40 +81,43 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-	const {photo_url, pre_meal_bdgs, insulin_units, id, aws_type, aws_name, category} = req.body;
+	const {photo_url, pre_meal_bdgs, insulin_units, id, aws_type, aws_name, categories} = req.body;
 	const currentTime = knex.fn.now();
 	var categoryId = ''
 	var photoId = ''
 
-	knex('categories').where({'category': category}).first()
+	knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
 		.then((results)=>{
+			res.json({results});
+			photoId = results[0].id
+			return photoId
+		}).then((photoId)=>{
 
-			if(!results){
-				knex('categories').insert({'category': category}).returning('*')
+			for (var i = 0; i < categories.length; i++) {
+				var category = categories[i].toLowerCase();
+				knex('categories').where({'category': category}).first()
 					.then((results)=>{
-						categoryId = results[0].id
-					})
-			} else {
-				categoryId = results.id
+
+						if(!results){
+							knex('categories').insert({'category': category}).returning('*')
+								.then((results)=>{
+									categoryId = results[0].id
+								})
+						} else {
+							categoryId = results.id
+						}
+					}).then(() =>{
+						knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
+							.then((results)=>{
+								console.log(results, 'results from jioning that cat and photo')
+							}).catch((err)=>{
+								console.log(err, 'error from trying to joing cats id and photo id')
+							})
+						})
 			}
 
-		}).then(() =>{
-			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
-				.then((results)=>{
-					photoId = results[0].id
-					res.json({results});
-				}).then(data =>{
-					knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
-						.then((results)=>{
-							console.log(results, 'results from jioning that cat and photo')
-						}).catch((err)=>{
-							console.log(err, 'error from trying to joing cats id and photo id')
-						})
-				})
-
 		})
-
-
+	})
 });
 
 router.post('/addPostBdgs', function(req, res, next){
