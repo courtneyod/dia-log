@@ -25,7 +25,7 @@ var upload = multer({
         s3: s3,
         bucket: 'dialog-courtney',
         key: function (req, file, cb) {
-            // console.log(file, 'file in multer');
+            console.log(file, 'file in multer');
             cb(null, file.originalname); //use Date.now() for unique file keys
         }
     })
@@ -49,8 +49,6 @@ function uploadToS3(file, destFileName, callback) {
 }
 
 router.post('/', upload.single('file'), function (req, res) {
-    console.log(req.file, 'files')
-    console.log(req.file.location, 'file location for aws')
 
     if (!req.file) {
         return res.status(403).send('expect 1 file upload named file1').end();

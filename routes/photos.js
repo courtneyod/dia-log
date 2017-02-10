@@ -95,19 +95,22 @@ router.post('/', function(req, res, next){
 
 			for (var i = 0; i < categories.length; i++) {
 				var category = categories[i].toLowerCase();
+				console.log(category, "ABOUT TO ADD THIS CAT")
+
 				knex('categories').where({'category': category}).first()
 					.then((results)=>{
-
+					console.log(results, "RESULTS FROM CHECKING IF CAT EXISITS");
 						if(!results){
 							knex('categories').insert({'category': category}).returning('*')
 								.then((results)=>{
-									categoryId = results[0].id
+									categoryId = results.id
 								})
 						} else {
 							categoryId = results.id
 						}
 					}).then(() =>{
 						knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
+						.returning('*')
 							.then((results)=>{
 								console.log(results, 'results from jioning that cat and photo')
 							}).catch((err)=>{
@@ -115,9 +118,7 @@ router.post('/', function(req, res, next){
 							})
 						})
 			}
-
 		})
-	})
 });
 
 router.post('/addPostBdgs', function(req, res, next){
