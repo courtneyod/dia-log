@@ -81,7 +81,7 @@ router.get('/', function(req, res, next){
 })
 
 router.post('/', function(req, res, next){
-	const {photo_url, pre_meal_bdgs, insulin_units, customer_id, aws_type, aws_name, category} = req.body;
+	const {photo_url, pre_meal_bdgs, insulin_units, id, aws_type, aws_name, category} = req.body;
 	const currentTime = knex.fn.now();
 	var categoryId = ''
 	var photoId = ''
@@ -99,7 +99,7 @@ router.post('/', function(req, res, next){
 			}
 
 		}).then(() =>{
-			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':customer_id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
+			knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
 				.then((results)=>{
 					photoId = results[0].id
 					res.json({results});
