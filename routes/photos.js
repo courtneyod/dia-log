@@ -127,6 +127,7 @@ router.post('/addPostBdgs', function(req, res, next){
 	.update({'post_meal_bdgs': postBdgs, 'post_meal_bdgs_time_stamp': currentTime})
 	.returning('*')
 	.then((results)=>{
+		console.log(results)
 		res.json({results})
 	}).catch((err)=>{
 		console.log(err)
