@@ -29,16 +29,57 @@ router.post('/', (req, res, next)=>{
 
 				bcrypt.compare(password, sqlPassword)
 				.then((response)=>{
+                    delete user['hashed_password'];
+                    delete user['updated_at'];
+                    delete user['created_at'];
+
                     var authentication = authenticateAndJWT(user);
+
                     var obj = {
                         'user': user,
                         'authentication': authentication
-                    }
-                    // console.log('user from login', user)
+                    };
                     res.json(obj);
 				}, console.error)
 		}
-	})
-})
+	});
+});
 
-module.exports = router
+router.get('/:id', (req, res, next)=>{
+    console.log(req.params, 'parans from the get')
+	const id = req.params.id
+
+	knex('customers').where('id', id).first()
+		.then((user)=>{
+			if(user){
+                delete user['hashed_password'];
+                delete user['updated_at'];
+                delete user['created_at'];
+
+                res.json({user})
+		}
+	});
+});
+
+router.put('/:id', (req, res, next)=>{
+	const id = req.params.id
+    // console.log(req.body, 'body in update')
+    const {photo, first_name, bdgs_high_range, bdgs_low_range} = req.body
+    console.log(photo, first_name, bdgs_high_range, bdgs_low_range, 'all the value')
+	knex('customers')
+    .where('id', id)
+    .update({'first_name': first_name, 'photo': photo, 'bdgs_high_range': bdgs_high_range, 'bdgs_low_range': bdgs_low_range})
+    .returning('*')
+		.then((user)=>{
+            console.log(user, 'user should be updated')
+			if(user){
+                delete user['hashed_password'];
+                delete user['updated_at'];
+                delete user['created_at'];
+
+                res.json({user})
+		}
+	});
+});
+
+module.exports = router;
