@@ -8,23 +8,26 @@ const db  = require('./knex');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-var cors = require('cors')
+const morgan = require('morgan'); // For logging
+const cors = require('cors')
 
 app.use(cors())
 
-var auth = require('./routes/auth');
+var aws = require('./routes/auth');
 var settings = require('./routes/settings');
 var photos = require('./routes/photos');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
 var categories = require('./routes/categories');
+var health_stat_categories = require('./routes/health_stat_categories');
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// 
+app.use(morgan('combined'))
+//
 // const myGoogleConfigs = {
 //     clientID: process.env.GOOGLE_CLIENT_ID,
 //     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -39,12 +42,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // ));
 
 
-app.use('/auth', auth)
+app.use('/aws', aws)
 app.use('/settings', settings)
 app.use('/photos', photos)
 app.use('/login', login)
 app.use('/signup', signup)
 app.use('/categories', categories)
+app.use('/health-stat-categories', health_stat_categories)
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -54,7 +58,7 @@ app.use(function(req, res, next) {
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('No route matches the page');
+  var err = new Error(req, 'No route matches the page');
   err.status = 404;
   next(err);
 });

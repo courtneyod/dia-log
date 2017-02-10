@@ -50,7 +50,7 @@ router.post('/', function(req, res, next){
 router.get('/:id', function(req, res, next){
 	const id = req.params.id;
 
-	knex('health_stat_categories').where('health_stat_id', id)
+	knex('categories').where('id', id)
 		.then(function(data){
 
 			res.json({data});
@@ -59,5 +59,7 @@ router.get('/:id', function(req, res, next){
 			res.status(500)
 		})
 })
+
+
 
 module.exports = router
