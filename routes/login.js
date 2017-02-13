@@ -19,6 +19,7 @@ router.get('/', (req,res) =>{
 
 router.post('/', (req, res, next)=>{
 	const {email, password} = req.query;
+    console.log(email, password, "EMAIL")
 
 	knex('customers').where('email', email).first()
 		.then((data)=>{

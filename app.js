@@ -32,8 +32,8 @@ var allowCrossDomain = function(req, res, next) {
 };
 app.use(allowCrossDomain);
 
-var aws = require('./routes/auth');
 var settings = require('./routes/settings');
+var aws = require('./routes/auth');
 var photos = require('./routes/photos');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
@@ -78,6 +78,7 @@ app.use('/health-stat-categories', health_stat_categories)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+    console.log(req, "REQUEST HERE")
   var err = new Error(req, 'No route matches the page');
   err.status = 404;
   next(err);
