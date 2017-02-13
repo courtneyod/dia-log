@@ -40,22 +40,6 @@ app.use(morgan('combined'))
 //     });
 //   }
 // ));
-
-
-app.use('/aws', aws)
-app.use('/settings', settings)
-app.use('/photos', photos)
-app.use('/login', login)
-app.use('/signup', signup)
-app.use('/categories', categories)
-app.use('/health-stat-categories', health_stat_categories)
-
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-
 // ## CORS middleware
 // For more info see: https://gist.github.com/cuppster/2344435
 //
@@ -74,6 +58,21 @@ var allowCrossDomain = function(req, res, next) {
     }
 };
 app.use(allowCrossDomain);
+
+app.use('/aws', aws)
+app.use('/settings', settings)
+app.use('/photos', photos)
+app.use('/login', login)
+app.use('/signup', signup)
+app.use('/categories', categories)
+app.use('/health-stat-categories', health_stat_categories)
+
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
