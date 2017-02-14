@@ -12,7 +12,6 @@ var passport = require('passport');
 var fs = require('fs');
 
 var AWS = require('aws-sdk');
-console.log(process.env.accessKeyId, 'PROCESS>ENV')
 AWS.config.update({ accessKeyId: process.env.accessKeyId, secretAccessKey: process.env.secretAccessKey, region: process.env.region });
 var s3 = new AWS.S3();
 AWS.config.update({region:'us-west-2'});

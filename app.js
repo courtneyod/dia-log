@@ -69,17 +69,12 @@ app.use('/signup', signup)
 app.use('/categories', categories)
 app.use('/health-stat-categories', health_stat_categories)
 
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    console.log(req, "REQUEST HERE")
+  // console.error(err.stack, "ERROR STACK")
+  console.log(new Error('NotFound').stack);
   var err = new Error(req, 'No route matches the page');
+  // console.log(err, "ERROR")
   err.status = 404;
   next(err);
 });

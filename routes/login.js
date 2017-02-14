@@ -30,6 +30,10 @@ router.post('/', (req, res, next)=>{
 
 				bcrypt.compare(password, sqlPassword)
 				.then((response)=>{
+                    if (!response){
+                        res.text('passwords dont match')
+                    }
+                    console.log(response, 'RESPONSE')
                     delete user['hashed_password'];
                     delete user['updated_at'];
                     delete user['created_at'];
@@ -42,7 +46,9 @@ router.post('/', (req, res, next)=>{
                     };
                     res.json(obj);
 				}, console.error)
-		}
+		} else {
+            res.text('user email does not exist')
+        }
 	});
 });
 
