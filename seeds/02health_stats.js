@@ -67,7 +67,7 @@ exports.seed = function(knex, Promise) {
             aws_type: 'image/jpeg',
             insulin_units: '9',
             customer_id: '1',
-            photo_url:'',
+            photo_url:'http://s6.favim.com/orig/65/coke-food-instagram-pizza-Favim.com-597855.jpg',
             pre_meal_bdgs_time_stamp: new Date('2017-02-05 13:26:16 UTC'),
             post_meal_bdgs_time_stamp: new Date('2017-02-05 19:26:16 UTC'),
             created_at: new Date('2017-02-05 14:26:16 UTC'),

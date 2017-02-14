@@ -85,10 +85,13 @@ router.post('/', function(req, res, next){
 	const currentTime = knex.fn.now();
 	var categoryId = ''
 	var photoId = ''
+	var success = {}
 
 	knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
 		.then((results)=>{
-			res.json({results});
+			results.category = categories
+			// res.json({success});
+			success = results;
 			photoId = results[0].id
 			return photoId
 		}).then((photoId)=>{
@@ -100,26 +103,37 @@ router.post('/', function(req, res, next){
 				knex('categories').where({'category': category}).first()
 					.then((results)=>{
 					console.log(results, "RESULTS FROM CHECKING IF CAT EXISITS");
-						if(!results){
+						if(results === undefined){
 							knex('categories').insert({'category': category}).returning('*')
 								.then((results)=>{
-									categoryId = results.id
+									categoryId = results[0].id
+								}).then(()=>{
+								    joinCatandPhoto(photoId, categoryId)
 								})
+
 						} else {
 							categoryId = results.id
-						}
-					}).then(() =>{
-						knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
-						.returning('*')
-							.then((results)=>{
-								console.log(results, 'results from jioning that cat and photo')
-							}).catch((err)=>{
-								console.log(err, 'error from trying to joing cats id and photo id')
-							})
+							joinCatandPhoto(photoId, categoryId)
+
+							}
 						})
 			}
+		}).then(()=>{
+			res.json({success});
 		})
 });
+
+function joinCatandPhoto(photoId, categoryId){
+	knex('health_stat_categories').insert({'categories_id': categoryId, 'health_stat_id': photoId})
+	.returning('*')
+		.then((results)=>{
+			console.log(results, 'results from jioning that cat and photo')
+
+		}).catch((err)=>{
+			console.log(categoryId, "catid,", photoId, ' heatlh stat id 2')
+			console.log(err, 'error from trying to joing cats id and photo id')
+		})
+}
 
 router.post('/addPostBdgs', function(req, res, next){
 	var postBdgs = req.body.postBdgs;

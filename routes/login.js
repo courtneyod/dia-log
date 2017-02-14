@@ -19,10 +19,11 @@ router.get('/', (req,res) =>{
 
 router.post('/', (req, res, next)=>{
 	const {email, password} = req.query;
-    console.log(email, password, "EMAIL")
+    // console.log(email, password, "EMAIL")
 
 	knex('customers').where('email', email).first()
 		.then((data)=>{
+            console.log(data, 'data')
 			if(data){
                 var user = data;
 				var sqlPassword = data.hashed_password;
@@ -31,7 +32,7 @@ router.post('/', (req, res, next)=>{
 				bcrypt.compare(password, sqlPassword)
 				.then((response)=>{
                     if (!response){
-                        res.text('passwords dont match')
+                        res.json('bad password or email')
                     }
                     console.log(response, 'RESPONSE')
                     delete user['hashed_password'];
@@ -47,7 +48,7 @@ router.post('/', (req, res, next)=>{
                     res.json(obj);
 				}, console.error)
 		} else {
-            res.text('user email does not exist')
+            res.json('bad password or email')
         }
 	});
 });
