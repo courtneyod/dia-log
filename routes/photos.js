@@ -83,8 +83,8 @@ router.get('/', function(req, res, next){
 router.post('/', function(req, res, next){
 	const {photo_url, pre_meal_bdgs, insulin_units, id, aws_type, aws_name, categories} = req.body;
 	const currentTime = knex.fn.now();
-	var categoryId = ''
-	var photoId = ''
+	// var categoryId = ''
+	// var photoId = ''
 	var success = {}
 
 	knex('health_stats').insert({'photo_url':photo_url, 'pre_meal_bdgs': pre_meal_bdgs, 'insulin_units':insulin_units, 'customer_id':id, 'pre_meal_bdgs_time_stamp': currentTime, "aws_type":aws_type, "aws_name":aws_name}).returning('*')
@@ -92,12 +92,12 @@ router.post('/', function(req, res, next){
 			results.category = categories
 			// res.json({success});
 			success = results;
-			photoId = results[0].id
+			var photoId = results[0].id
 			return photoId
 		}).then((photoId)=>{
 
 			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i].toLowerCase();
+				let category = categories[i].toLowerCase();
 				console.log(category, "ABOUT TO ADD THIS CAT")
 
 				knex('categories').where({'category': category}).first()
@@ -106,13 +106,14 @@ router.post('/', function(req, res, next){
 						if(results === undefined){
 							knex('categories').insert({'category': category}).returning('*')
 								.then((results)=>{
-									categoryId = results[0].id
-								}).then(()=>{
+									let categoryId = results[0].id
+									return categoryId
+								}).then((categoryId)=>{
 								    joinCatandPhoto(photoId, categoryId)
 								})
 
 						} else {
-							categoryId = results.id
+							let categoryId = results.id
 							joinCatandPhoto(photoId, categoryId)
 
 							}
